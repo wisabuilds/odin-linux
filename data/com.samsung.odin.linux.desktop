@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Odin Linux
+GenericName=Samsung Firmware Flashing Suite
+Comment=Modern GTK4 / Libadwaita GUI for Samsung Odin4 CLI
+Exec=odin-linux %U
+Icon=com.samsung.odin.linux
+Terminal=false
+Categories=System;FileTools;
+Keywords=samsung;odin;flash;firmware;android;galaxy;recovery;
+StartupNotify=true
+StartupWMClass=com.samsung.odin.linux

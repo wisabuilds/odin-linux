@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python Syntax
+        run: |
+          python -m py_compile odin_linux/app.py
+          python -m py_compile odin_linux/__init__.py
+
+      - name: Validate Desktop Entry File
+        run: |
+          sudo apt-get install -y desktop-file-utils
+          desktop-file-validate data/com.samsung.odin.linux.desktop

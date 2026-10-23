@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Odin Linux Launcher
+set -e
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
+export PYTHONPATH="$DIR:${PYTHONPATH}"
+export ODIN4_BIN="${ODIN4_BIN:-$DIR/bin/odin4}"
+
+exec python3 -m odin_linux.app "$@"

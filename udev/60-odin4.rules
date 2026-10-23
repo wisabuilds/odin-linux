@@ -1,0 +1,6 @@
+# Samsung Download Mode USB rules for Odin4
+# Vendor: 04e8 (Samsung Electronics Co., Ltd)
+# Product: 685d (Galaxy Download / Odin Mode)
+
+SUBSYSTEM=="usb", ATTR{idVendor}=="04e8", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="04e8", ATTR{idProduct}=="685d", MODE="0666", GROUP="plugdev"
