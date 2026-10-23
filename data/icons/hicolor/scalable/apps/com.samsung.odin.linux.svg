@@ -1,86 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
   <defs>
-    <!-- Background Gradient -->
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#242e42"/>
-      <stop offset="100%" stop-color="#101520"/>
+    <!-- Samsung Deep Royal Blue Gradient -->
+    <linearGradient id="odinBase" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1558b0"/>
+      <stop offset="100%" stop-color="#08224d"/>
     </linearGradient>
 
-    <!-- Phone Bezel Gradient -->
-    <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2c374d"/>
-      <stop offset="100%" stop-color="#1a2230"/>
+    <!-- Subtle Bevel Top Highlight -->
+    <linearGradient id="topBevel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"/>
     </linearGradient>
 
-    <!-- Screen Gradient -->
-    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#0b1019"/>
-      <stop offset="100%" stop-color="#05080e"/>
-    </linearGradient>
-
-    <!-- Cyan Glow Gradient -->
-    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#38ef7d"/>
-      <stop offset="50%" stop-color="#11998e"/>
-      <stop offset="100%" stop-color="#00bcd4"/>
-    </linearGradient>
-
-    <!-- Odin Blue / Lightning Gradient -->
-    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00e5ff"/>
-      <stop offset="50%" stop-color="#3584e4"/>
-      <stop offset="100%" stop-color="#7852ff"/>
-    </linearGradient>
-
-    <!-- Soft Drop Shadow Filter -->
-    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="125%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.45"/>
-    </filter>
-
-    <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    <!-- Soft Ambient Drop Shadow -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#000000" flood-opacity="0.4"/>
     </filter>
   </defs>
 
-  <!-- Base Squircle (GNOME HIG) -->
-  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#bgGrad)" filter="url(#dropShadow)"/>
-  <rect x="8.5" y="8.5" width="111" height="111" rx="27.5" fill="none" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
+  <!-- Base Squircle (GNOME HIG Keyline) -->
+  <rect x="12" y="12" width="104" height="104" rx="24" fill="url(#odinBase)" filter="url(#shadow)"/>
+  <rect x="12.5" y="12.5" width="103" height="103" rx="23.5" fill="none" stroke="url(#topBevel)" stroke-width="1"/>
 
-  <!-- Phone Graphic -->
-  <g transform="translate(36, 20)">
-    <!-- Outer Phone Body -->
-    <rect x="0" y="0" width="56" height="88" rx="10" fill="url(#phoneGrad)" stroke="#3f4e6b" stroke-width="1.5" filter="url(#dropShadow)"/>
-
-    <!-- Screen Inner -->
-    <rect x="4" y="8" width="48" height="72" rx="6" fill="url(#screenGrad)"/>
-
-    <!-- Top Speaker Ear Piece -->
-    <rect x="22" y="3.5" width="12" height="2" rx="1" fill="#4a5b78"/>
-
-    <!-- Screen Circuit Grid Lines (Subtle) -->
-    <path d="M12 20 L44 20 M12 68 L44 68" stroke="#1d2a3d" stroke-width="1" stroke-dasharray="2,2"/>
-
-    <!-- Download Arrow Graphic inside screen -->
-    <g transform="translate(13, 22)">
-      <!-- Arrow Shaft -->
-      <rect x="11" y="4" width="8" height="18" rx="3" fill="url(#boltGrad)" filter="url(#glowFilter)"/>
-      <!-- Arrow Head -->
-      <polygon points="15,35 4,22 26,22" fill="url(#boltGrad)" filter="url(#glowFilter)"/>
-
-      <!-- Download Base Tray -->
-      <path d="M4 38 L26 38" stroke="url(#cyanGrad)" stroke-width="3" stroke-linecap="round"/>
-      <path d="M2 34 L2 40 L28 40 L28 34" stroke="url(#cyanGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    </g>
-
-    <!-- Pulsing Signal / Progress Dots -->
-    <circle cx="20" cy="74" r="2" fill="#3584e4"/>
-    <circle cx="28" cy="74" r="2" fill="#00e5ff"/>
-    <circle cx="36" cy="74" r="2" fill="#2ec27e"/>
+  <!-- Valknut / Geometric Odin Triangles -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Top Apex Triangle -->
+    <polygon points="64,28 88,70 40,70" stroke="#ffffff" stroke-width="6" stroke-opacity="0.95"/>
+    
+    <!-- Bottom Right Triangle -->
+    <polygon points="76,49 100,91 52,91" stroke="#ffffff" stroke-width="6" stroke-opacity="0.80"/>
+    
+    <!-- Bottom Left Triangle -->
+    <polygon points="52,49 76,91 28,91" stroke="#ffffff" stroke-width="6" stroke-opacity="0.80"/>
   </g>
 
-  <!-- Odin Rune Accent / Lightning Flash -->
-  <g transform="translate(86, 22)">
-    <path d="M4 0 L14 12 L8 13 L12 24 L2 11 L7 10 Z" fill="#f6d32d" filter="url(#glowFilter)"/>
-  </g>
+  <!-- Hardware Download Pulse / Download Pin -->
+  <circle cx="64" cy="56" r="4" fill="#38ef7d"/>
 </svg>
