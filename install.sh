@@ -36,10 +36,10 @@ EOF
 chmod +x "$BIN_DIR/odin-linux"
 
 echo "[+] Installing desktop application launcher and icon..."
+# Clean up any legacy duplicate launcher
+rm -f "$DESKTOP_DIR/odin-linux.desktop"
 cp "$SCRIPT_DIR/data/com.samsung.odin.linux.desktop" "$DESKTOP_DIR/com.samsung.odin.linux.desktop"
-cp "$SCRIPT_DIR/data/com.samsung.odin.linux.desktop" "$DESKTOP_DIR/odin-linux.desktop"
 cp "$SCRIPT_DIR/data/icons/hicolor/scalable/apps/com.samsung.odin.linux.svg" "$ICON_DIR/com.samsung.odin.linux.svg"
-cp "$SCRIPT_DIR/data/icons/hicolor/scalable/apps/com.samsung.odin.linux.svg" "$ICON_DIR/odin-linux.svg"
 
 # Update caches
 if command -v update-desktop-database >/dev/null 2>&1; then
