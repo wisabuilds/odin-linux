@@ -146,14 +146,14 @@ CUSTOM_CSS = """
 }
 
 .odin-console-scrolled {
-    background-color: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: #161b22;
+    border: 1px solid alpha(@window_fg_color, 0.12);
     border-radius: 8px;
 }
 
 .odin-console-view {
     background-color: transparent;
-    color: #dcdcdc;
+    color: #e6edf3;
     font-family: monospace;
     font-size: 11.5px;
 }
@@ -181,7 +181,7 @@ class OdinApp(Adw.Application):
         self.window.present()
 
 
-class OdinWindow(Adw.Window):
+class OdinWindow(Adw.ApplicationWindow):
     def __init__(self, app=None):
         super().__init__()
         if app:
@@ -201,11 +201,25 @@ class OdinWindow(Adw.Window):
         self.slot_descs = {}
 
         self.setup_css()
+        self.setup_actions()
         self.setup_ui()
         self.check_device()
 
         # Poll USB connection every 2 seconds
         GLib.timeout_add_seconds(2, self.check_device)
+
+    def setup_actions(self):
+        about_action = Gio.SimpleAction.new("about", None)
+        about_action.connect("activate", self.on_show_about)
+        self.add_action(about_action)
+
+        guide_action = Gio.SimpleAction.new("guide", None)
+        guide_action.connect("activate", self.on_show_guide)
+        self.add_action(guide_action)
+
+        refresh_action = Gio.SimpleAction.new("refresh", None)
+        refresh_action.connect("activate", lambda a, p: self.check_device())
+        self.add_action(refresh_action)
 
     def setup_css(self):
         try:
@@ -223,7 +237,10 @@ class OdinWindow(Adw.Window):
 
     def setup_ui(self):
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        self.set_content(main_box)
+
+        self.toast_overlay = Adw.ToastOverlay.new()
+        self.toast_overlay.set_child(main_box)
+        self.set_content(self.toast_overlay)
 
         # Header bar
         header = Adw.HeaderBar()
@@ -231,16 +248,25 @@ class OdinWindow(Adw.Window):
         header.set_title_widget(title_widget)
 
         # Quick Load Firmware Button (Zip / Folder)
-        load_btn = Gtk.Button(label="Load Firmware", icon_name="archive-extract-symbolic")
+        load_btn = Gtk.Button(label="Load Firmware", icon_name="document-open-symbolic")
         load_btn.set_tooltip_text("Open a firmware .zip file or extracted folder")
         load_btn.connect("clicked", self.on_load_firmware_dialog)
         header.pack_start(load_btn)
 
-        # Download Mode Button Guide
-        guide_btn = Gtk.Button(label="Recovery Guide", icon_name="help-about-symbolic")
-        guide_btn.set_tooltip_text("Instructions for entering Samsung Download Mode")
-        guide_btn.connect("clicked", self.on_show_guide)
-        header.pack_end(guide_btn)
+        # Primary Menu Button (☰)
+        menu = Gio.Menu()
+        menu.append("Recovery Guide", "win.guide")
+        menu.append("Scan for USB Device", "win.refresh")
+
+        section = Gio.Menu()
+        section.append("About Odin Linux", "win.about")
+        menu.append_section(None, section)
+
+        menu_btn = Gtk.MenuButton()
+        menu_btn.set_icon_name("open-menu-symbolic")
+        menu_btn.set_menu_model(menu)
+        menu_btn.set_tooltip_text("Main Menu")
+        header.pack_end(menu_btn)
 
         main_box.append(header)
 
@@ -493,7 +519,35 @@ class OdinWindow(Adw.Window):
                 lbl.set_css_classes(["caption", "dim-label"])
         return False
 
-    def on_show_guide(self, btn):
+    def show_toast(self, text, timeout=3):
+        toast = Adw.Toast.new(text)
+        toast.set_timeout(timeout)
+        self.toast_overlay.add_toast(toast)
+
+    def on_show_about(self, *args):
+        dialog = Adw.AboutDialog.new() if hasattr(Adw, "AboutDialog") else Adw.AboutWindow.new()
+        if hasattr(dialog, "set_transient_for"):
+            dialog.set_transient_for(self)
+
+        dialog.set_application_name("Odin Linux")
+        dialog.set_application_icon("com.samsung.odin.linux")
+        dialog.set_developer_name("wisabuilds")
+        dialog.set_version("1.0.0")
+        dialog.set_website("https://github.com/wisabuilds/odin-linux")
+        dialog.set_issue_url("https://github.com/wisabuilds/odin-linux/issues")
+        dialog.set_comments("Modern GTK4 &amp; Libadwaita frontend for Samsung Odin4 CLI on Linux")
+        dialog.set_license_type(Gtk.License.GPL_3_0)
+        dialog.set_copyright("© 2026 wisabuilds")
+
+        if hasattr(dialog, "add_credit_section"):
+            dialog.add_credit_section("Flashing Engine", ["Samsung Electronics Co., Ltd. (Odin4)"])
+
+        if hasattr(Adw, "AboutDialog"):
+            dialog.present(self)
+        else:
+            dialog.present()
+
+    def on_show_guide(self, *args):
         self.show_alert(
             "Samsung Download Mode Guide",
             "1. Disconnect USB cable from phone.\n\n"
@@ -585,6 +639,7 @@ class OdinWindow(Adw.Window):
         if slot == "CSC":
             self.found_csc = None
             self.found_home_csc = None
+        self.show_toast(f"Cleared {slot} partition slot")
 
     def on_browse_slot(self, slot):
         dialog = Gtk.FileDialog()
@@ -661,6 +716,7 @@ class OdinWindow(Adw.Window):
         self.progress_bar.set_text("Ready to Flash")
         self.append_log(f"[SUCCESS] Zip extracted to: {out_dir}\n")
         self.populate_from_folder(out_dir)
+        self.show_toast("Firmware packages extracted and loaded")
 
     def populate_from_folder(self, folder_path):
         self.append_log(f"Scanning directory: {folder_path}\n")
@@ -892,7 +948,7 @@ class OdinWindow(Adw.Window):
         text = self.log_buffer.get_text(bounds[0], bounds[1], False)
         clipboard = self.get_display().get_clipboard()
         clipboard.set(text)
-        self.progress_bar.set_text("Log Copied to Clipboard!")
+        self.show_toast("Log copied to clipboard")
 
     def on_save_log(self, btn):
         bounds = self.log_buffer.get_bounds()
@@ -902,12 +958,13 @@ class OdinWindow(Adw.Window):
         try:
             with open(save_path, "w", encoding="utf-8") as f:
                 f.write(text)
-            self.show_alert("Log Saved", f"Log successfully written to:\n{save_path}")
+            self.show_toast(f"Log saved: ~/{filename}")
         except Exception as e:
             self.show_alert("Save Error", f"Could not save log: {e}")
 
     def on_clear_log(self, btn):
         self.log_buffer.set_text("")
+        self.show_toast("Log console cleared")
 
     def show_alert(self, title, msg):
         dialog = Adw.MessageDialog(
